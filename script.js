@@ -47,6 +47,15 @@ numberButtons.forEach((button) => {
     });
 });
 
+// Truncate the current operand if it is too long
+function truncateOperand(operand) {
+    operand = operand.toString().slice(0, MAX_LENGTH);
+    if (operand[-1] === ".") {
+        operand = operand.slice(0, -1);
+    }
+    return operand;
+}
+
 // Evaluate the current expression if possible
 function evaluate() {
     if (currentOperator === null || secondOperand === "") {
@@ -57,10 +66,7 @@ function evaluate() {
         Number(firstOperand),
         Number(secondOperand)
     );
-    firstOperand = firstOperand.toString().slice(0, MAX_LENGTH);
-    if (firstOperand[-1] === ".") {
-        firstOperand = firstOperand.slice(0, -1);
-    }
+    firstOperand = truncateOperand(firstOperand);
     currentOperator = null;
     secondOperand = "";
     display.textContent = firstOperand;
@@ -84,7 +90,7 @@ allClearButton.addEventListener("click", () => {
     firstOperand = "";
     secondOperand = "";
     currentOperator = null;
-    display.textContent = "0";
+    display.textContent = "";
 });
 
 // Add event listener to sign button
@@ -102,5 +108,43 @@ signButton.addEventListener("click", () => {
         firstOperand = changeOperandSign(firstOperand);
     } else {
         secondOperand = changeOperandSign(secondOperand);
+    }
+});
+
+// Add event listener to decimal button
+const decimalButton = document.querySelector(".decimal");
+function appendDecimal(operand) {
+    if (operand === "" || operand.includes(".")) {
+        return operand;
+    }
+    operand += ".";
+    operand = truncateOperand(operand);
+    display.textContent = operand;
+    return operand;
+}
+decimalButton.addEventListener("click", () => {
+    if (currentOperator === null) {
+        firstOperand = appendDecimal(firstOperand);
+    } else {
+        secondOperand = appendDecimal(secondOperand);
+    }
+});
+
+// Add event listener to percent button
+const percentButton = document.querySelector(".percent");
+function convertToPercent(operand) {
+    if (operand === "") {
+        return operand;
+    }
+    operand /= 100;
+    operand = truncateOperand(operand);
+    display.textContent = operand;
+    return operand;
+}
+percentButton.addEventListener("click", () => {
+    if (currentOperator === null) {
+        firstOperand = convertToPercent(firstOperand);
+    } else {
+        secondOperand = convertToPercent(secondOperand);
     }
 });
