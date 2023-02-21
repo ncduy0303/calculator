@@ -35,7 +35,6 @@ function truncateOperand(operand) {
 
 // Add event listeners to number buttons
 function appendOperand(operand, digit) {
-    console.log(operand, digit === "00");
     if (
         (digit === "0" && operand === "0") ||
         (digit === "00" && (operand === "" || operand === "0"))
@@ -142,8 +141,9 @@ function convertToPercent(operand) {
     if (operand === "") {
         return operand;
     }
-    operand /= 100;
+    operand = Number(operand) / 100;
     operand = truncateOperand(operand);
+    operand = Number(operand).toString();
     display.textContent = operand;
     return operand;
 }
