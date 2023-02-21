@@ -1,5 +1,5 @@
 // A web application for a calculator
-const MAX_LENGTH = 10;
+const MAX_LENGTH = 11;
 
 let firstOperand = "";
 let secondOperand = "";
@@ -25,11 +25,11 @@ function applyOperator(operator, firstNumber, secondNumber) {
 }
 
 // Add event listeners to number buttons
-function updateOperand(operand, value) {
+function appendOperand(operand, digit) {
     if (operand.length >= MAX_LENGTH) {
         return operand;
     }
-    operand += value;
+    operand += digit;
     display.textContent = operand;
     return operand;
 }
@@ -40,9 +40,9 @@ numberButtons.forEach((button) => {
                 firstOperand = "";
                 resetDisplay = false;
             }
-            firstOperand = updateOperand(firstOperand, button.value);
+            firstOperand = appendOperand(firstOperand, button.value);
         } else {
-            secondOperand = updateOperand(secondOperand, button.value);
+            secondOperand = appendOperand(secondOperand, button.value);
         }
     });
 });
@@ -57,7 +57,10 @@ function evaluate() {
         Number(firstOperand),
         Number(secondOperand)
     );
-    firstOperand = Math.round(firstOperand * 10 ** MAX_LENGTH) / 10 ** MAX_LENGTH;
+    firstOperand = firstOperand.toString().slice(0, MAX_LENGTH);
+    if (firstOperand[-1] === ".") {
+        firstOperand = firstOperand.slice(0, -1);
+    }
     currentOperator = null;
     secondOperand = "";
     display.textContent = firstOperand;
@@ -74,3 +77,30 @@ operatorButtons.forEach((button) => {
 
 // Add event listener to equal button
 equalButton.addEventListener("click", evaluate);
+
+// Add event listener to all clear button
+const allClearButton = document.querySelector(".all-clear");
+allClearButton.addEventListener("click", () => {
+    firstOperand = "";
+    secondOperand = "";
+    currentOperator = null;
+    display.textContent = "0";
+});
+
+// Add event listener to sign button
+const signButton = document.querySelector(".sign");
+function changeOperandSign(operand) {
+    if (operand === "") {
+        return "";
+    }
+    operand = -operand;
+    display.textContent = operand;
+    return operand;
+}
+signButton.addEventListener("click", () => {
+    if (currentOperator === null) {
+        firstOperand = changeOperandSign(firstOperand);
+    } else {
+        secondOperand = changeOperandSign(secondOperand);
+    }
+});
