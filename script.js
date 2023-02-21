@@ -24,12 +24,26 @@ function applyOperator(operator, firstNumber, secondNumber) {
     }
 }
 
+// Truncate the current operand if it is too long
+function truncateOperand(operand) {
+    operand = operand.toString().slice(0, MAX_LENGTH);
+    if (operand[-1] === ".") {
+        operand = operand.slice(0, -1);
+    }
+    return operand;
+}
+
 // Add event listeners to number buttons
 function appendOperand(operand, digit) {
-    if (operand.length >= MAX_LENGTH) {
+    console.log(operand, digit === "00");
+    if (
+        (digit === "0" && operand === "0") ||
+        (digit === "00" && (operand === "" || operand === "0"))
+    ) {
         return operand;
     }
     operand += digit;
+    operand = truncateOperand(operand);
     display.textContent = operand;
     return operand;
 }
@@ -47,29 +61,22 @@ numberButtons.forEach((button) => {
     });
 });
 
-// Truncate the current operand if it is too long
-function truncateOperand(operand) {
-    operand = operand.toString().slice(0, MAX_LENGTH);
-    if (operand[-1] === ".") {
-        operand = operand.slice(0, -1);
-    }
-    return operand;
-}
-
 // Evaluate the current expression if possible
 function evaluate() {
     if (currentOperator === null || secondOperand === "") {
-        return;
+        firstOperand = Number(firstOperand);
+    } else {
+        firstOperand = applyOperator(
+            currentOperator,
+            Number(firstOperand),
+            Number(secondOperand)
+        );
     }
-    firstOperand = applyOperator(
-        currentOperator,
-        Number(firstOperand),
-        Number(secondOperand)
-    );
     firstOperand = truncateOperand(firstOperand);
     currentOperator = null;
     secondOperand = "";
     display.textContent = firstOperand;
+    resetDisplay = true;
 }
 
 // Add event listeners to operator buttons
@@ -77,7 +84,6 @@ operatorButtons.forEach((button) => {
     button.addEventListener("click", () => {
         evaluate();
         currentOperator = button.value;
-        resetDisplay = true;
     });
 });
 
@@ -99,7 +105,7 @@ function changeOperandSign(operand) {
     if (operand === "") {
         return "";
     }
-    operand = -operand;
+    operand = "-" + operand;
     display.textContent = operand;
     return operand;
 }
